@@ -8,6 +8,9 @@ global com
 human = 0
 com = 0
 
+#added variable to store the difficulty level
+difficulty = 1  # default level
+
 #for displaying choices.
 def display_choices():
     print("Now you're going to play Stone Paper Scissor game.")
@@ -16,15 +19,53 @@ def display_choices():
     print("Stone   : 1")
     print("Scissor : 2")
     print("Paper   : 3")
-    
+    print()
+    #showing extra options for difficulty
+    print("Choose Difficulty Level :- ")
+    print("1. Easy")
+    print("2. Medium")
+    print("3. Hard")
+
+#function to decide computer's choice based on selected difficulty
+def get_computer_choice(diff, last_human_choice):
+    #easy = totally random, medium = sometimes smart, hard = always tries to counter
+    if diff == 1:
+        return random.randint(1, 3)
+    elif diff == 2:
+        #in medium mode, computer sometimes tries to counter your previous move
+        if last_human_choice and random.random() < 0.5:
+            return counter_move(last_human_choice)
+        else:
+            return random.randint(1, 3)
+    else:
+        #in hard mode, computer always tries to beat your previous move
+        if last_human_choice:
+            return counter_move(last_human_choice)
+        else:
+            return random.randint(1, 3)
+
+#function for finding the move that can beat user's last move
+def counter_move(choice):
+    if choice == 1:
+        return 3
+    elif choice == 2:
+        return 1
+    elif choice == 3:
+        return 2
+
 #main gameplay.     
 def play_game(human,com):
+    global difficulty
+    global last_human_choice
     
     #humanc =  int(input("Enter the choice here 1-3 : "))
     num = int(input("Enter the choice here 1-3 : "))
     humanc = validate(num)
-        
-    comc = random.randint(1,3)
+    
+    #getting computer choice according to difficulty selected
+    comc = get_computer_choice(difficulty, last_human_choice)
+    last_human_choice = humanc
+
     display_result(humanc, comc)
     
     winner(humanc, comc)
@@ -104,7 +145,22 @@ def final(p1,p2):
 #     return com_choice
 
 display_choices()
+
+#asking player to choose game difficulty
+difficulty = int(input("Enter difficulty (1-3): "))
+if difficulty not in [1,2,3]:
+    print("Invalid choice. Default (Medium) selected.")
+    difficulty = 2
+else:
+    if difficulty == 1:
+        print("Difficulty set to Easy mode.")
+    elif difficulty == 2:
+        print("Difficulty set to Medium mode.")
+    else:
+        print("Difficulty set to Hard mode.")
+
 i =30
+last_human_choice = None
 #loop for playing the match 
 while(i < 40):
     if human == 10 or com == 10:
